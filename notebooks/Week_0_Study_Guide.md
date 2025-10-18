@@ -631,11 +631,15 @@ aoi = Map.draw_last_feature
 # Convert to GeoJSON
 aoi_geojson = geemap.ee_to_geojson(aoi)
 
-# Save to file
-with open('../data/external/aoi.geojson', 'w') as f:
+# Save to file (robust to running from repo root or notebooks/)
+from pathlib import Path
+repo_root = Path.cwd() if (Path.cwd() / 'data').exists() else Path.cwd().parent
+out_path = repo_root / 'data' / 'external' / 'aoi.geojson'
+out_path.parent.mkdir(parents=True, exist_ok=True)
+with open(out_path, 'w') as f:
     json.dump(aoi_geojson, f, indent=2)
 
-print("✓ AOI saved to data/external/aoi.geojson")
+print(f"✓ AOI saved to {out_path}")
 ```
 
 **Method 2: Define a bounding box programmatically**
@@ -654,11 +658,15 @@ aoi_ee = ee.Geometry.Rectangle(bbox)
 # Convert to GeoJSON
 aoi_geojson = aoi_ee.getInfo()
 
-# Save to file
-with open('../data/external/aoi.geojson', 'w') as f:
+# Save to file (robust to running from repo root or notebooks/)
+from pathlib import Path
+repo_root = Path.cwd() if (Path.cwd() / 'data').exists() else Path.cwd().parent
+out_path = repo_root / 'data' / 'external' / 'aoi.geojson'
+out_path.parent.mkdir(parents=True, exist_ok=True)
+with open(out_path, 'w') as f:
     json.dump(aoi_geojson, f, indent=2)
 
-print("✓ AOI saved to data/external/aoi.geojson")
+print(f"✓ AOI saved to {out_path}")
 ```
 
 #### Step 24: Visualize Your AOI
@@ -666,20 +674,24 @@ print("✓ AOI saved to data/external/aoi.geojson")
 ```python
 import geemap
 
-# Load your saved AOI
-with open('../data/external/aoi.geojson', 'r') as f:
+# Load your saved AOI (robust path)
+from pathlib import Path
+repo_root = Path.cwd() if (Path.cwd() / 'data').exists() else Path.cwd().parent
+with open(repo_root / 'data' / 'external' / 'aoi.geojson', 'r') as f:
     aoi_geojson = json.load(f)
 
 # Convert to Earth Engine geometry
 aoi_ee = geemap.geojson_to_ee(aoi_geojson)
 
-# Create map and add AOI
+# Create map and add AOI as an outline on top of a basemap
 Map = geemap.Map()
-Map.centerObject(aoi_ee, 8)
-Map.addLayer(aoi_ee, {'color': 'red'}, 'Area of Interest')
-
-# Add a basemap
 Map.add_basemap('SATELLITE')
+
+# Render an outline regardless of geometry type
+outline = ee.Image().byte().paint(aoi_ee, 1, 3)  # value=1, width=3 px
+Map.addLayer(outline, {'palette': 'red'}, 'AOI outline')
+
+Map.centerObject(aoi_ee, 9)
 
 Map
 ```
@@ -1157,6 +1169,24 @@ conda activate geoai
    conda install package_name --force-reinstall
    ```
 
+#### Issue: "ModuleNotFoundError: No module named 'dotenv'"
+
+**Cause:** The correct package is `python-dotenv`. Installing `dotenv` (without the `python-` prefix) is a different, deprecated package and will not provide `from dotenv import load_dotenv`.
+
+**Solution:** Uninstall `dotenv` if present and install `python-dotenv` in your active environment/kernel.
+
+```bash
+conda activate geoai
+pip uninstall -y dotenv
+conda install -y -c conda-forge python-dotenv  # or: pip install python-dotenv
+```
+
+In Jupyter (per-kernel install):
+
+```python
+%pip uninstall -y dotenv
+%pip install python-dotenv
+```
 ---
 
 ## Glossary Terms Introduced This Week
