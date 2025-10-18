@@ -190,6 +190,20 @@ While your `geoai` environment is activated, run:
 python -m ipykernel install --user --name geoai --display-name "Python (geoai)"
 ```
 
+If you see an error like "No module named ipykernel", first ensure `ipykernel` is installed in the `geoai` environment and then register using the environment's Python explicitly.
+
+```bash
+# Ensure ipykernel is installed in the env (safe to re-run)
+conda activate geoai
+conda install -y -c conda-forge ipykernel
+
+# Alternative registration methods if your shell picks the wrong Python
+/opt/miniconda3/envs/geoai/bin/python -m ipykernel install --user --name geoai --display-name "Python (geoai)"
+
+# Or via conda-run (avoids shell PATH issues)
+conda run -n geoai python -m ipykernel install --user --name geoai --display-name "Python (geoai)"
+```
+
 **What this does:**
 - Creates a Jupyter kernel that points to your `geoai` environment
 - The kernel will appear as "Python (geoai)" in Jupyter's kernel selection dropdown
@@ -219,6 +233,12 @@ print(sys.executable)
 The output should show a path containing `.../envs/geoai/...`, confirming you're using the correct environment.
 
 **Common Issue**: If you don't see "Python (geoai)" in the kernel list, make sure you ran the `ipykernel install` command while the `geoai` environment was activated.
+
+You can also list installed kernels to verify installation:
+
+```bash
+jupyter kernelspec list
+```
 
 ---
 
@@ -1055,6 +1075,34 @@ Next week, we'll put your new environment to work! You'll learn:
    pip install --force-reinstall ipykernel
    python -m ipykernel install --user --name geoai --display-name "Python (geoai)"
    ```
+
+#### Issue: "No module named ipykernel" when installing kernel
+
+**Cause:** Your shell may be invoking a different Python (e.g., `pyenv`) instead of the `geoai` environment's Python.
+
+**Solution:** Install `ipykernel` in `geoai` and register the kernel using the env's Python.
+
+```bash
+conda activate geoai
+conda install -y -c conda-forge ipykernel
+
+# Use absolute env Python to register
+/opt/miniconda3/envs/geoai/bin/python -m ipykernel install --user --name geoai --display-name "Python (geoai)"
+
+# Or use conda-run
+conda run -n geoai python -m ipykernel install --user --name geoai --display-name "Python (geoai)"
+
+# Verify kernel is listed
+jupyter kernelspec list
+```
+
+If `conda activate` isn't affecting your `which python`, initialize Conda for your shell and restart it:
+
+```bash
+conda init zsh
+exec $SHELL -l
+conda activate geoai
+```
 
 #### Issue: "Earth Engine authentication fails"
 

@@ -1,5 +1,14 @@
 data/raw/*
 data/processed/*
+data/external/*
 *.pyc
 __pycache__/
 .ipynb_checkpoints/
+.env
+
+# macOS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/

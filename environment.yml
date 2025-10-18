@@ -62,7 +62,7 @@ dependencies:
   - icu=75.1=hfee45f7_0
   - idna=3.10=pyhd8ed1ab_1
   - importlib-metadata=8.7.0=pyhe01879c_1
-  - ipykernel=6.30.1=pyh92f572d_0
+  - ipykernel=7.0.1=pyh5552912_0
   - ipython=9.6.0=pyhfa0c392_0
   - ipython_pygments_lexers=1.1.1=pyhd8ed1ab_0
   - ipywidgets=8.1.7=pyhd8ed1ab_0
